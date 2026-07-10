@@ -103,6 +103,15 @@ _INDEX_HTML = """\
     const form = document.getElementById("form");
     const input = document.getElementById("input");
     const send = document.getElementById("send");
+    // Build API URLs relative to this page's mount prefix. Nerdit's path-mode
+    // proxy serves the app at https://host/<name>/ and strips that prefix, so a
+    // root-absolute "/api/chat" would escape the app and hit the daemon. Using
+    // the current directory works behind the proxy, at a subdomain, and at
+    // loopback alike. The app's page is always the mount root, so treat the
+    // pathname as the prefix (add a trailing slash if the URL lacks one).
+    const BASE = location.pathname.endsWith("/")
+      ? location.pathname
+      : location.pathname + "/";
     function bubble(text, who) {
       const el = document.createElement("div");
       el.className = "msg " + who;
@@ -120,7 +129,7 @@ _INDEX_HTML = """\
       send.disabled = true;
       const pending = bubble("…", "bot");
       try {
-        const res = await fetch("/api/chat", {
+        const res = await fetch(BASE + "api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message }),
