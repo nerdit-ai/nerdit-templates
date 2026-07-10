@@ -1,0 +1,5 @@
+[deploy]
+name = "node-starter"
+port = 3000
+gpus = 0
+health = "/health"

@@ -1,0 +1,14 @@
+[deploy]
+name = "fastapi-ai-chat"
+port = 8000
+gpus = 0
+start = "uvicorn main:app --host 0.0.0.0 --port 8000"
+health = "/health"
+
+# This app declares it needs AI. Nerdit resolves the binding at launch and
+# injects OPENAI_BASE_URL / OPENAI_API_KEY / OPENAI_MODEL — the app code never
+# changes whether the model is a local Ollama model or an external API.
+# Serve a model first, e.g. `nerdit serve llama3.1:8b`.
+[ai.default]
+provider = "ollama"
+model = "llama3.1:8b"
