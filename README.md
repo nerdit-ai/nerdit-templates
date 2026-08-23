@@ -14,6 +14,7 @@ nerdit store deploy <id> --name my-app
 | `fastapi-ai-chat` | [`fastapi-ai-chat/`](fastapi-ai-chat) | Python · FastAPI | ✅ `[ai.default]` (Ollama) |
 | `fastapi-api-starter` | [`fastapi-api-starter/`](fastapi-api-starter) | Python · FastAPI | — |
 | `node-starter` | [`node-starter/`](node-starter) | Node · Express | — |
+| `static-site` | [`static-site/`](static-site) | Static · nginx-unprivileged (non-root, :8080) | — |
 
 ## Versioning
 

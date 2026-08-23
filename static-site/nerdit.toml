@@ -1,0 +1,5 @@
+[deploy]
+name = "static-site"
+port = 8080
+gpus = 0
+health = "/"
