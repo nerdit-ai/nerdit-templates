@@ -41,9 +41,11 @@ async def stripe_webhook(request: Request) -> dict[str, bool]:
     # Delivery is at least once: Stripe and Nerdit both retry.
     if event_id in _seen:
         return {"duplicate": True}
+    logger.info("stripe event %s %s", event_type, event_id)
+    # Handle event_type here (checkout.session.completed, invoice.paid, ...).
+    # Raise on failure: the id is recorded only after success, so the retry
+    # from Stripe or Nerdit runs the handler again instead of being skipped.
     _seen[event_id] = None
     if len(_seen) > _SEEN_MAX:
         del _seen[next(iter(_seen))]  # oldest first: dicts keep insertion order
-    logger.info("stripe event %s %s", event_type, event_id)
-    # Handle event_type here (checkout.session.completed, invoice.paid, ...).
     return {"received": True}
