@@ -1,0 +1,15 @@
+[deploy]
+name = "stripe-webhook"
+port = 8000
+gpus = 0
+start = "uvicorn main:app --host 0.0.0.0 --port 8000"
+health = "/health"
+
+# Stripe sends its events here. The machine checks the Stripe-Signature with
+# the signing secret before the app sees the request. Set that secret once
+# Stripe shows it: nerdit secrets set <app> --prompt NERDIT_HOOK_STRIPE_SECRET
+# (the key the console's Webhooks panel and `nerdit hooks` also write).
+[hooks.stripe]
+sender = "stripe"
+path = "/webhooks/stripe"
+secret = "${secrets.NERDIT_HOOK_STRIPE_SECRET}"
