@@ -59,6 +59,14 @@ def test_run_enriches_new_items_once(client):
     assert "about t0" in client.get("/").text
 
 
+def test_a_feed_link_that_is_not_http_is_never_an_href(client, monkeypatch):
+    hostile = [{"guid": "x", "title": "t", "link": "javascript:alert(1)"}]
+    monkeypatch.setattr(main, "fetch_feed", lambda: hostile)
+    client.post("/_agent/run/daily", headers=AUTH)
+    page = client.get("/").text
+    assert "javascript:" not in page and "href='#'" in page
+
+
 def test_budget_exceeded_stops_the_run(client, monkeypatch):
     def over_budget(title):
         response = httpx.Response(429, request=httpx.Request("POST", "http://gateway/v1"))

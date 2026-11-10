@@ -193,6 +193,11 @@ def run_daily(request: Request, background: BackgroundTasks) -> dict[str, str]:
     return {"accepted": run_id}
 
 
+def _href(link: str) -> str:
+    """Escape a feed link for an href; a feed is untrusted, so only http(s) is clickable."""
+    return html.escape(link, quote=True) if link.startswith(("https://", "http://")) else "#"
+
+
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
     conn = _db()
@@ -202,7 +207,7 @@ def index() -> str:
     esc = html.escape
     item_rows = "".join(
         f"<tr><td>{esc(r['category'] or '')}</td>"
-        f"<td><a href='{esc(r['link'] or '', quote=True)}' rel='noreferrer'>"
+        f"<td><a href='{_href(r['link'] or '')}' rel='noreferrer'>"
         f"{esc(r['title'] or '')}</a><br><small>{esc(r['summary'] or '')}</small></td></tr>"
         for r in items
     )
