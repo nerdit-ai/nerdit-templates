@@ -16,6 +16,7 @@ nerdit store deploy <id> --name my-app
 | `node-starter` | [`node-starter/`](node-starter) | Node · Express | — |
 | `static-site` | [`static-site/`](static-site) | Static · nginx-unprivileged (non-root, :8080) | — |
 | `stripe-webhook` | [`stripe-webhook/`](stripe-webhook) | Python · FastAPI · `[hooks.stripe]` | — |
+| `scheduled-ai-job` | [`scheduled-ai-job/`](scheduled-ai-job) | Python · FastAPI · SQLite · `[schedules.daily]` | ✅ `[ai.default]` (gateway) |
 
 ## Versioning
 

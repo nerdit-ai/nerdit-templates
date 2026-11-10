@@ -1,0 +1,24 @@
+[deploy]
+name = "scheduled-ai-job"
+port = 8000
+gpus = 0
+start = "uvicorn main:app --host 0.0.0.0 --port 8000"
+health = "/health"
+
+# The model goes through the machine's AI gateway: the provider key stays on
+# the machine, and usage is counted per app. "fast" is a machine alias; define
+# it once in the console's AI page, or `nerdit ai routes set fast ...`.
+[ai.default]
+provider = "gateway"
+model = "fast"
+
+# Nerdit calls this route every day at 07:00 UTC. The app checks
+# X-Nerdit-Schedule-Token, answers 202 and does the work in the background.
+[schedules.daily]
+cron = "0 7 * * *"
+path = "/_agent/run/daily"
+
+# Optional ceiling for this app on the gateway. Past it the gateway answers
+# 429 budget_exceeded until next month. Raising it takes the console or an admin.
+[limits]
+ai_tokens_month = 200000
