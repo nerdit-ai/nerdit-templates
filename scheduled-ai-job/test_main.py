@@ -59,6 +59,16 @@ def test_run_enriches_new_items_once(client):
     assert "about t0" in client.get("/").text
 
 
+def test_a_run_that_cannot_start_does_not_block_the_next_one(client, monkeypatch):
+    db = main._db
+    monkeypatch.setattr(main, "_db", lambda: (_ for _ in ()).throw(main.sqlite3.OperationalError()))
+    with pytest.raises(main.sqlite3.OperationalError):
+        client.post("/_agent/run/daily", headers=AUTH)
+    monkeypatch.setattr(main, "_db", db)
+    again = client.post("/_agent/run/daily", headers={**AUTH, "x-nerdit-schedule-run": "r1"})
+    assert again.json() == {"accepted": "r1"}
+
+
 def test_a_feed_link_that_is_not_http_is_never_an_href(client, monkeypatch):
     hostile = [{"guid": "x", "title": "t", "link": "javascript:alert(1)"}]
     monkeypatch.setattr(main, "fetch_feed", lambda: hostile)

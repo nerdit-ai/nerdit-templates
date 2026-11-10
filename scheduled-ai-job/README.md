@@ -58,7 +58,9 @@ key, it is not a guarantee on your invoice.
 - Change the time in `[schedules.daily]` (`cron`, optional `timezone`). The
   shortest interval is 5 minutes.
 - Writing from several processes, or need SQL from elsewhere? Swap SQLite for a
-  managed Postgres with `[db.default]`.
+  managed Postgres with `[db.default]`. The "one run at a time" lock lives in
+  this process's memory: with several workers, claim the run in the database
+  instead.
 
 ## Why the token check
 

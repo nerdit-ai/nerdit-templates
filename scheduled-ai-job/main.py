@@ -175,18 +175,22 @@ def run_daily(request: Request, background: BackgroundTasks) -> dict[str, str]:
     run_id = request.headers.get("x-nerdit-schedule-run") or uuid.uuid4().hex
     if not _busy.acquire(blocking=False):
         return {"skipped": "a run is already in progress"}
-    conn = _db()
     try:
-        conn.execute(
-            "INSERT INTO runs (run_id, started_at, outcome) VALUES (?, ?, 'running')",
-            (run_id, _now()),
-        )
-        conn.commit()
+        conn = _db()
+        try:
+            conn.execute(
+                "INSERT INTO runs (run_id, started_at, outcome) VALUES (?, ?, 'running')",
+                (run_id, _now()),
+            )
+            conn.commit()
+        finally:
+            conn.close()
     except sqlite3.IntegrityError:  # the same run delivered twice
         _busy.release()
         return {"duplicate": run_id}
-    finally:
-        conn.close()
+    except Exception:  # no run starts: a held lock would skip every later call
+        _busy.release()
+        raise
     # Answer now, work after: Nerdit records 202 as "accepted" and does not
     # wait. The run's real outcome is in the runs table (and on the page).
     background.add_task(work, run_id)
